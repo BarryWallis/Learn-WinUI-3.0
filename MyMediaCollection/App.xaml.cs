@@ -4,6 +4,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
+using MyMediaCollection.ViewModels;
+
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 
@@ -17,6 +19,8 @@ namespace MyMediaCollection
     /// </summary>
     public sealed partial class App : Application
     {
+        public static MainViewModel ViewModel { get; } = new();
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
