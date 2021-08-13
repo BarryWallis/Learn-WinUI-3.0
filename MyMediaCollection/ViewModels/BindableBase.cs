@@ -2,12 +2,17 @@
 
 using Microsoft.UI.Xaml.Data;
 
+using MyMediaCollection.Interfaces;
+
 #nullable enable
 namespace MyMediaCollection.ViewModels
 {
     public class BindableBase : INotifyPropertyChanged
     {
         public virtual event PropertyChangedEventHandler? PropertyChanged;
+
+        protected INavigationService? navigationService;
+        protected IDataService? dataService;
 
         /// <summary>
         /// Signal that a property has changed.

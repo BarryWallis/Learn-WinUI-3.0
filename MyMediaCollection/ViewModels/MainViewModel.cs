@@ -1,18 +1,21 @@
 ﻿using System.Collections.Generic;
+using AppUIBasics;
 using System.Diagnostics;
+using System.Linq;
 
 using Microsoft.UI.Xaml.Input;
 
 //using Microsoft.UI.Xaml.Data;
 
-using MyMediaCollection.Enums;
+using MyMediaCollection.Interfaces;
 using MyMediaCollection.Models;
 
 namespace MyMediaCollection.ViewModels
 {
     public class MainViewModel : BindableBase
     {
-        private bool _isLoaded = false;
+        private const string AllMediums = "All";
+
         private AppUIBasics.ObservableCollection<MediaItem> _allItems;
 
         private MediaItem _selectedMediaItem;
@@ -22,7 +25,7 @@ namespace MyMediaCollection.ViewModels
             set
             {
                 _ = SetProperty(ref _selectedMediaItem, value);
-                (DeleteCommand as RelayCommand).RaiseCanExecuteChanged();
+                ((RelayCommand)DeleteCommand).RaiseCanExecuteChanged();
             }
         }
 
@@ -47,7 +50,7 @@ namespace MyMediaCollection.ViewModels
             }
         }
 
-        private AppUIBasics.ObservableCollection<MediaItem> _items;
+        private AppUIBasics.ObservableCollection<MediaItem> _items = new();
         public AppUIBasics.ObservableCollection<MediaItem> Items
         {
             get => _items;
@@ -55,7 +58,6 @@ namespace MyMediaCollection.ViewModels
         }
 
         private IList<string> _mediums;
-        private int _additionalItemCount = 0;
 
         public IList<string> Mediums
         {
@@ -71,24 +73,13 @@ namespace MyMediaCollection.ViewModels
         /// </summary>
         public void AddOrEditItem()
         {
-            // TODO: This is temporary until we use a real data source.
-            const int StartingItemCount = 3;
-            MediaItem newItem = new()
+            int selectedItemId = -1;
+            if (SelectedMediaItem != null)
             {
-                Id = StartingItemCount + ++_additionalItemCount,
-                Location = LocationType.InCollection,
-                MediaType = ItemType.Music,
-                MediumInfo = new()
-                {
-                    Id = 1,
-                    MediaType = ItemType.Music,
-                    Name = "CD",
-                },
-                Name = $"CD {_additionalItemCount}",
-            };
+                selectedItemId = SelectedMediaItem.Id;
+            }
 
-            _allItems.Add(newItem);
-            Items.Add(newItem);
+            navigationService.NavigateTo("ItemDetailsPage", selectedItemId);
         }
 
         public ICommand DeleteCommand { get; set; }
@@ -106,81 +97,35 @@ namespace MyMediaCollection.ViewModels
         }
         #endregion
 
-        public MainViewModel()
+        public MainViewModel(INavigationService navigationService, IDataService dataService)
         {
+            this.navigationService = navigationService;
+            this.dataService = dataService;
             PopulateData();
             DeleteCommand = new RelayCommand(DeleteItem, CanDeleteItem);
             AddEditCommand = new RelayCommand(AddOrEditItem);
         }
 
         /// <summary>
-        /// TODO: Remove temporary function to supply data during initial development
+        /// Set up temporary data.
         /// </summary>
-        public void PopulateData()
+        private void PopulateData()
         {
-            if (!_isLoaded)
-            {
-                _isLoaded = true;
-                MediaItem cd = new()
-                {
-                    Id = 1,
-                    Name = "Classical Favorites",
-                    MediaType = ItemType.Music,
-                    MediumInfo = new Medium
-                    {
-                        Id = 1,
-                        MediaType = ItemType.Music,
-                        Name = "CD",
-                    }
-                };
-
-                MediaItem book = new()
-                {
-                    Id = 2,
-                    Name = "Classic Fairy Tales",
-                    MediaType = ItemType.Book,
-                    MediumInfo = new Medium
-                    {
-                        Id = 2,
-                        MediaType = ItemType.Book,
-                        Name = "Book",
-                    }
-                };
-
-                MediaItem bluRay = new()
-                {
-                    Id = 3,
-                    Name = "The Mummy",
-                    MediaType = ItemType.Video,
-                    MediumInfo = new Medium
-                    {
-                        Id = 3,
-                        MediaType = ItemType.Video,
-                        Name = "Blu-Ray",
-                    }
-                };
-
-                Items = new AppUIBasics.ObservableCollection<MediaItem>
-                {
-                    cd, book, bluRay,
-                };
-
-                _allItems = new AppUIBasics.ObservableCollection<MediaItem>();
-                foreach (MediaItem item in Items)
-                {
-                    _allItems.Add(item);
-                }
-
-                Mediums = new List<string>
-                {
-                    "All",
-                    nameof(ItemType.Book),
-                    nameof(ItemType.Music),
-                    nameof(ItemType.Video),
-                };
-
-                SelectedMedium = Mediums[0];
-            }
+            _items.Clear();
+            dataService.GetItems().ToList().ForEach(i => _items.Add(i));
+            _allItems = new ObservableCollection<MediaItem>(Items);
+            _mediums = new ObservableCollection<string> { AllMediums };
+            dataService.GetItemTypes().ToList().ForEach(it => _mediums.Add(it.ToString()));
+            _selectedMedium = _mediums[0];
         }
+
+        /// <summary>
+        /// Add an item when the user double taps a collection item.
+        /// </summary>
+        /// <param name="sender">The object sending the event.</param>
+        /// <param name="e">The event argument(s).</param>
+#pragma warning disable IDE0060 // Remove unused parameter
+        public void ListViewDoubleTapped(object sender, DoubleTappedRoutedEventArgs e) => AddOrEditItem();
+#pragma warning restore IDE0060 // Remove unused parameter
     }
 }

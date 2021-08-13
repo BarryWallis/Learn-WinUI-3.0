@@ -1,10 +1,14 @@
 ﻿using System;
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
+using MyMediaCollection.Interfaces;
+using MyMediaCollection.Services;
 using MyMediaCollection.ViewModels;
+using MyMediaCollection.Views;
 
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -19,7 +23,10 @@ namespace MyMediaCollection
     /// </summary>
     public sealed partial class App : Application
     {
-        public static MainViewModel ViewModel { get; } = new();
+        /// <summary>
+        /// The dependency injection container.
+        /// </summary>
+        public IServiceProvider Container { get; private set; }
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -28,9 +35,7 @@ namespace MyMediaCollection
         public App()
         {
             InitializeComponent();
-#pragma warning disable CS8305 // Type is for evaluation purposes only and is subject to change or removal in future updates.
             Suspending += OnSuspending;
-#pragma warning restore CS8305 // Type is for evaluation purposes only and is subject to change or removal in future updates.
         }
 
         /// <summary>
@@ -44,6 +49,9 @@ namespace MyMediaCollection
             // just ensure that the window is active
             if (Window.Current.Content is not Frame rootFrame)
             {
+                // Register our services.
+                Container = RegisterServices();
+
                 // Create a Frame to act as the navigation context and navigate to the first page
                 rootFrame = new Frame();
 
@@ -91,6 +99,23 @@ namespace MyMediaCollection
             SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+        /// <summary>
+        /// Initialize the dependency injection container.
+        /// </summary>
+        /// <returns>The new service provider.</returns>
+        private IServiceProvider RegisterServices()
+        {
+            ServiceCollection services = new();
+            NavigationService navigationService = new();
+            navigationService.Configure(nameof(MainPage), typeof(MainPage));
+            navigationService.Configure(nameof(ItemDetailsPage), typeof(ItemDetailsPage));
+            _ = services.AddSingleton<INavigationService>(navigationService)
+                        .AddSingleton<IDataService, DataService>()
+                        .AddTransient<MainViewModel>()
+                        .AddTransient<ItemDetailsViewModel>();
+            return services.BuildServiceProvider();
         }
     }
 }
