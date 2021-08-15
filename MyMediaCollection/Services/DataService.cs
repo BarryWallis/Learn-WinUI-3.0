@@ -43,7 +43,19 @@ namespace MyMediaCollection.Services
         /// </summary>
         /// <param name="id">The Id of the media item to get.</param>
         /// <returns>The media item with the given Id or the default media item if none exsts.</returns>
-        public MediaItem GetItem(int id) => _mediaItems.FirstOrDefault(i => i.Id == id);
+        public MediaItem GetItem(int id)
+        {
+            MediaItem mediaItem = _mediaItems.FirstOrDefault(i => i.Id == id);
+            if (mediaItem == default)
+            {
+                mediaItem.Name = string.Empty;
+                mediaItem.MediumInfo = GetMediums()[0];
+                mediaItem.Location = GetLocationTypes()[0];
+                mediaItem.MediaType = GetItemTypes()[0];
+            }
+
+            return mediaItem;
+        }
 
         /// <summary>
         /// Get a list of all the media items.
@@ -81,7 +93,7 @@ namespace MyMediaCollection.Services
         /// </summary>
         /// <param name="itemType">The item type to filter on.</param>
         /// <returns>The list of mediums with the requested item type.</returns>
-        public IList<Medium> GetMediums(ItemType itemType) => _mediums.Where(m => m.MediaType == itemType).ToList();
+        public IList<Medium> GetMediums(ItemType? itemType) => _mediums.Where(m => m.MediaType == itemType).ToList();
 
         /// <summary>
         /// Update the given media item.
@@ -183,7 +195,7 @@ namespace MyMediaCollection.Services
         /// <summary>
         /// Populate the item types list.
         /// </summary>
-        private void PopulateItemTypes() 
+        private void PopulateItemTypes()
             => _itemTypes = Enum.GetNames(typeof(ItemType)).Select(s => Enum.Parse<ItemType>(s, false)).ToList();
 
         /// <summary>

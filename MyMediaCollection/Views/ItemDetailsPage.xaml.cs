@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿
+using System.Diagnostics;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
@@ -6,6 +7,8 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
 using MyMediaCollection.ViewModels;
+
+using Windows.Storage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -19,7 +22,17 @@ namespace MyMediaCollection.Views
     {
         public ItemDetailsViewModel ViewModel { get; } = (Application.Current as App)?.Container.GetService<ItemDetailsViewModel>();
 
-        public ItemDetailsPage() => InitializeComponent();
+        public ItemDetailsPage()
+        {
+            InitializeComponent();
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            string haveExplainedSaveSetting = localSettings.Values[nameof(SavingTip)] as string;
+            if (!bool.TryParse(haveExplainedSaveSetting, out bool result) || !result)
+            {
+                SavingTip.IsOpen = true;
+                localSettings.Values[nameof(SavingTip)] = "true";
+            }
+        }
 
         /// <inheritdoc/>
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -28,7 +41,7 @@ namespace MyMediaCollection.Views
             int selectItemId = (int)e.Parameter;
             if (selectItemId > 0)
             {
-                ViewModel.InitializeItemDetailData(selectItemId); 
+                ViewModel.InitializeItemDetailData(selectItemId);
             }
         }
     }

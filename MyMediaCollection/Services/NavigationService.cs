@@ -2,8 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -42,7 +40,7 @@ namespace MyMediaCollection.Services
             {
                 throw new ArgumentException($"The page {page} has already been registered.", nameof(page));
             }
-            if (_pages.Values.Any(t=>t == type))
+            if (_pages.Values.Any(t => t == type))
             {
                 throw new ArgumentException($"The {type.Name} view has already been registered.", nameof(type));
             }
@@ -70,7 +68,7 @@ namespace MyMediaCollection.Services
                 throw new ArgumentException($"Unable to fund a page registered with the name {page}.", nameof(page));
             }
 
-            _= AppFrame.Navigate(_pages[page], parameter);
+            _ = AppFrame.Navigate(_pages[page], parameter);
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using AppUIBasics;
 using System.Diagnostics;
 using System.Linq;
 
-using Microsoft.UI.Xaml.Input;
+using AppUIBasics;
 
+using Microsoft.UI.Xaml.Input;
 //using Microsoft.UI.Xaml.Data;
 
 using MyMediaCollection.Interfaces;
@@ -16,7 +16,7 @@ namespace MyMediaCollection.ViewModels
     {
         private const string AllMediums = "All";
 
-        private AppUIBasics.ObservableCollection<MediaItem> _allItems;
+        private ObservableCollection<MediaItem> _allItems;
 
         private MediaItem _selectedMediaItem;
         public MediaItem SelectedMediaItem
@@ -50,8 +50,8 @@ namespace MyMediaCollection.ViewModels
             }
         }
 
-        private AppUIBasics.ObservableCollection<MediaItem> _items = new();
-        public AppUIBasics.ObservableCollection<MediaItem> Items
+        private ObservableCollection<MediaItem> _items = new();
+        public ObservableCollection<MediaItem> Items
         {
             get => _items;
             set => SetProperty(ref _items, value);

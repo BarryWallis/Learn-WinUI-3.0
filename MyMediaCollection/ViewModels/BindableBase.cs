@@ -18,7 +18,7 @@ namespace MyMediaCollection.ViewModels
         /// Signal that a property has changed.
         /// </summary>
         /// <param name="propertyName">The name of the property. If null, the calling property name is used.</param>
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) 
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace MyMediaCollection.ViewModels
         /// <param name="newValue">The new value of the property. </param>
         /// <param name="propertyName">The name of the property. If null, the calling property name is used.</param>
         /// <returns>True if the value was changed; false otherwise.</returns>
-        protected bool SetProperty<T>(ref T originalValue, T newValue, [CallerMemberName] string? propertyName = null)
+        protected bool SetProperty<T>(ref T? originalValue, T? newValue, [CallerMemberName] string? propertyName = null)
         {
             bool result = false;
             if (!Equals(originalValue, newValue))

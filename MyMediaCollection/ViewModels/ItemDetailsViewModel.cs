@@ -20,24 +20,62 @@ namespace MyMediaCollection.ViewModels
         public string ItemName
         {
             get => _itemName;
-            set => IsDirty = SetProperty(ref _itemName, value);
+            set
+            {
+                IsDirty = SetProperty(ref _itemName, value) || IsDirty;
+                IsPageValid = !string.IsNullOrWhiteSpace(value);
+            }
         }
+
+        private bool _isPageValid;
+        public bool IsPageValid
+        {
+            get => _isPageValid;
+            set => SetProperty(ref _isPageValid, !string.IsNullOrWhiteSpace(ItemName)
+                                                                && SelectedLocation is not null
+                                                                && SelectedItemType is not null
+                                                                && SelectedMedium is not null, nameof(CanBeSaved));
+        }
+
+        public bool CanBeSaved => IsDirty && IsPageValid;
 
         private string _selectedMedium;
         public string SelectedMedium
         {
             get => _selectedMedium;
-            set => IsDirty = SetProperty(ref _selectedMedium, value);
+            set
+            {
+                IsDirty = SetProperty(ref _selectedMedium, value) || IsDirty;
+                IsPageValid = value is not null;
+            }
         }
 
+
         private string _selectedLocation;
-        public string SelectedLocation { get => _selectedLocation; set => IsDirty = SetProperty(ref _selectedLocation, value); }
+        public string SelectedLocation
+        {
+            get => _selectedLocation;
+            set
+            {
+                IsDirty = SetProperty(ref _selectedLocation, value) || IsDirty;
+                IsPageValid = value is not null;
+            }
+        }
 
         private ObservableCollection<string> _mediums = new();
+
+        public void DefaultItemDetailData()
+        {
+            ItemName = "New Item";
+            SelectedLocation = dataService.GetLocationTypes()[0].ToString();
+            SelectedItemType = dataService.GetItemTypes()[0].ToString();
+            SelectedMedium = dataService.GetMediums(dataService.GetItemTypes()[0])[0].Name;
+            IsDirty = false;
+            IsPageValid = false;
+        }
+
         private ObservableCollection<string> _itemTypes = new();
         private ObservableCollection<string> _locationTypes = new();
-
-        private bool _isDirty;
 
         private string _selectedItemType;
         public string SelectedItemType
@@ -57,26 +95,21 @@ namespace MyMediaCollection.ViewModels
                             .ForEach(n => Mediums.Add(n));
                     }
 
-                    (SaveCommand as RelayCommand).RaiseCanExecuteChanged();
+                    //(SaveCommand as RelayCommand).RaiseCanExecuteChanged();
+                    IsPageValid = !string.IsNullOrWhiteSpace(value);
                 }
             }
         }
 
-        public ICommand SaveCommand { get; }
+        //public ICommand SaveCommand { get; }
 
         public ICommand CancelCommand { get; }
 
+        private bool _isDirty;
         public bool IsDirty
         {
             get => _isDirty;
-            private set
-            {
-                if (_isDirty != value)
-                {
-                    _isDirty = value;
-                    (SaveCommand as RelayCommand).RaiseCanExecuteChanged();
-                }
-            }
+            private set => SetProperty(ref _isDirty, value, nameof(CanBeSaved));
         }
 
         public ObservableCollection<string> Mediums { get => _mediums; set => SetProperty(ref _mediums, value); }
@@ -89,11 +122,13 @@ namespace MyMediaCollection.ViewModels
         {
             this.navigationService = navigationService;
             this.dataService = dataService;
-            SaveCommand = new RelayCommand(SaveItem, CanSaveItem);
+            //SaveCommand = new RelayCommand(SaveItem, CanSaveItem);
             CancelCommand = new RelayCommand(Cancel);
             PopulateLists();
             PopulateExistingItem(dataService);
             IsDirty = false;
+            IsPageValid = false;
+
         }
 
         /// <summary>
@@ -158,21 +193,20 @@ namespace MyMediaCollection.ViewModels
                     MediaType = (ItemType)Enum.Parse(typeof(ItemType), SelectedItemType),
                     MediumInfo = dataService.GetMedium(SelectedMedium)
                 };
+
                 _ = dataService.AddItem(mediaItem);
             }
-
-            navigationService.GoBack();
         }
 
         /// <summary>
         /// Does the current item need to be saved and can it be saved? 
         /// </summary>
         /// <returns><see langword="true"/> if it needs to be saved and can be saved, otherwise <see langword="false"/>.</returns>
-        private bool CanSaveItem() => IsDirty
-                                      && !string.IsNullOrWhiteSpace(ItemName)
-                                      && !string.IsNullOrWhiteSpace(SelectedItemType)
-                                      && !string.IsNullOrWhiteSpace(SelectedMedium)
-                                      && !string.IsNullOrWhiteSpace(SelectedLocation);
+        //private bool CanSaveItem() => IsDirty
+        //                              && !string.IsNullOrWhiteSpace(ItemName)
+        //                              && !string.IsNullOrWhiteSpace(SelectedItemType)
+        //                              && !string.IsNullOrWhiteSpace(SelectedMedium)
+        //                              && !string.IsNullOrWhiteSpace(SelectedLocation);
 
         /// <summary>
         /// Iniitialize the data for the item details page.
@@ -184,6 +218,31 @@ namespace MyMediaCollection.ViewModels
             PopulateLists();
             PopulateExistingItem(dataService);
             IsDirty = false;
+            IsPageValid = false;
+        }
+
+        /// <summary>
+        /// Save the current item and initilize the page to add a new item.
+        /// </summary>
+        public void SaveItemAndContinue()
+        {
+            SaveItem();
+            _itemId = 0;
+            ItemName = string.Empty;
+            SelectedMedium = null;
+            SelectedLocation = null;
+            SelectedItemType = null;
+            IsDirty = false;
+            IsPageValid = false;
+        }
+
+        /// <summary>
+        /// Save the current item and return to the previous page.
+        /// </summary>
+        public void SaveItemAndReturn()
+        {
+            SaveItem();
+            navigationService.GoBack();
         }
     }
 }

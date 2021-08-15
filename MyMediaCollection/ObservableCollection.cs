@@ -1,14 +1,11 @@
-﻿using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Interop;
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Interop;
 
 using NotifyCollectionChangedAction = Microsoft.UI.Xaml.Interop.NotifyCollectionChangedAction;
 
@@ -21,7 +18,7 @@ namespace AppUIBasics
     // to use MUX types, such that creating WUX types raises an RPC_E_WRONG_THREAD error
     // due to DXamlCore not being initialized.  For the purposes of our tests, we're providing
     // our own implementation of ObservableCollection<T> that implements MUX.INotifyCollectionChanged.
-    public class ObservableCollection<T> : Collection<T>, Microsoft.UI.Xaml.Interop.INotifyCollectionChanged, INotifyPropertyChanged
+    public class ObservableCollection<T> : Collection<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         private ReentrancyGuard _reentrancyGuard = null;
 
@@ -43,7 +40,7 @@ namespace AppUIBasics
         public ObservableCollection(IList<T> list) : base(list.ToList()) { }
         public ObservableCollection(IEnumerable<T> collection) : base(collection.ToList()) { }
 
-        public event Microsoft.UI.Xaml.Interop.NotifyCollectionChangedEventHandler CollectionChanged;
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public void Move(int oldIndex, int newIndex) => MoveItem(oldIndex, newIndex);
 
@@ -131,9 +128,9 @@ namespace AppUIBasics
             IBindableVector newItems,
             IBindableVector oldItems,
             int newIndex,
-            int oldIndex) => OnCollectionChanged(new Microsoft.UI.Xaml.Interop.NotifyCollectionChangedEventArgs(action, newItems, oldItems, newIndex, oldIndex));
+            int oldIndex) => OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, newItems, oldItems, newIndex, oldIndex));
 
-        protected virtual void OnCollectionChanged(Microsoft.UI.Xaml.Interop.NotifyCollectionChangedEventArgs e)
+        protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
             using (BlockReentrancy())
             {
@@ -148,7 +145,7 @@ namespace AppUIBasics
 
     public class TestBindableVector<T> : IList<T>, IBindableVector
     {
-        readonly IList<T> _implementation;
+        private readonly IList<T> _implementation;
 
         public TestBindableVector() => _implementation = new List<T>();
         public TestBindableVector(IList<T> list) => _implementation = new List<T>(list);

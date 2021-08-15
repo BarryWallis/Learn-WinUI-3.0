@@ -62,7 +62,7 @@ namespace MyMediaCollection.Interfaces
         /// </summary>
         /// <param name="itemType">The item type to get the mediums for.</param>
         /// <returns></returns>
-        IList<Medium> GetMediums(ItemType itemType);
+        IList<Medium> GetMediums(ItemType? itemType);
 
         /// <summary>
         /// Get a list of all the available media locations.

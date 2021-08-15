@@ -40,7 +40,7 @@
                    Grid.Row="0"
                    FontSize="18"
                    Margin="8" />
-        
+
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -95,9 +95,33 @@
         <StackPanel Grid.Row="2"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right">
-            <Button Content="Save"
-                    Margin="8,8,0,8"
-                    Command="{x:Bind ViewModel.SaveCommand}" />
+            <SplitButton x:Name="SaveButton"
+                         Content="Save"
+                         Margin="8,8,0,8"
+                         Click="{x:Bind ViewModel.SaveItemAndReturn}"
+                         IsEnabled="{x:Bind ViewModel.CanBeSaved, Mode=OneWay}">
+                <SplitButton.Resources>
+                    <TeachingTip x:Name="SavingTip"
+                                 Target="{x:Bind SaveButton}"
+                                 Title="Save and Create New"
+                                 Subtitle="Use the dropdown button option to save your item and create another." />
+                </SplitButton.Resources>
+                <SplitButton.Flyout>
+                    <Flyout>
+                        <StackPanel>
+                            <Button Content="Save and Create New"
+                                    Click="{x:Bind ViewModel.SaveItemAndContinue}"
+                                    IsEnabled="{x:Bind ViewModel.CanBeSaved,Mode=OneWay}"
+                                    Background="Transparent" />
+                            <Button Content="Save and Return"
+                                    Click="{x:Bind ViewModel.SaveItemAndReturn}"
+                                    IsEnabled="{x:Bind ViewModel.CanBeSaved,Mode=OneWay}"
+                                    Background="Transparent" />
+                        </StackPanel>
+                    </Flyout>
+                </SplitButton.Flyout>
+            </SplitButton>
+
             <Button Content="Cancel"
                     Margin="8"
                     Command="{x:Bind ViewModel.CancelCommand}" />
