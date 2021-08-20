@@ -1,5 +1,6 @@
 ﻿
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
@@ -35,13 +36,13 @@ namespace MyMediaCollection.Views
         }
 
         /// <inheritdoc/>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             int selectItemId = (int)e.Parameter;
             if (selectItemId > 0)
             {
-                ViewModel.InitializeItemDetailData(selectItemId);
+                await ViewModel.InitializeItemDetailDataAsync(selectItemId);
             }
         }
     }

@@ -94,6 +94,8 @@
     </Compile>
     <Compile Include="Interfaces\IDataService.cs" />
     <Compile Include="Interfaces\InavigationService.cs" />
+    <Compile Include="Interfaces\IValidatable.cs" />
+    <Compile Include="Services\SqliteDataService.cs" />
     <Compile Include="ViewModels\ItemDetailsViewModel.cs" />
     <Compile Include="ObservableCollection.cs" />
     <Compile Include="Services\DataService.cs" />
@@ -140,6 +142,18 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Dapper">
+      <Version>2.0.90</Version>
+    </PackageReference>
+    <PackageReference Include="Dapper.Contrib">
+      <Version>2.0.78</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Data.Sqlite">
+      <Version>5.0.9</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Data.Sqlite.Core">
+      <Version>5.0.9</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection">
       <Version>5.0.2</Version>
     </PackageReference>

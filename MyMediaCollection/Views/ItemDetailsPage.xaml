@@ -98,7 +98,7 @@
             <SplitButton x:Name="SaveButton"
                          Content="Save"
                          Margin="8,8,0,8"
-                         Click="{x:Bind ViewModel.SaveItemAndReturn}"
+                         Click="{x:Bind ViewModel.SaveItemAndReturnAsync}"
                          IsEnabled="{x:Bind ViewModel.CanBeSaved, Mode=OneWay}">
                 <SplitButton.Resources>
                     <TeachingTip x:Name="SavingTip"
@@ -110,11 +110,11 @@
                     <Flyout>
                         <StackPanel>
                             <Button Content="Save and Create New"
-                                    Click="{x:Bind ViewModel.SaveItemAndContinue}"
+                                    Click="{x:Bind ViewModel.SaveItemAndContinueAsync}"
                                     IsEnabled="{x:Bind ViewModel.CanBeSaved,Mode=OneWay}"
                                     Background="Transparent" />
                             <Button Content="Save and Return"
-                                    Click="{x:Bind ViewModel.SaveItemAndReturn}"
+                                    Click="{x:Bind ViewModel.SaveItemAndReturnAsync}"
                                     IsEnabled="{x:Bind ViewModel.CanBeSaved,Mode=OneWay}"
                                     Background="Transparent" />
                         </StackPanel>

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 using AppUIBasics;
 
@@ -90,8 +91,13 @@ namespace MyMediaCollection.ViewModels
         /// <returns><see langword="true"/> if an item can be deleted; otherwise <see langword="false"/>.</returns>
         private bool CanDeleteItem() => _selectedMediaItem is not null;
 
-        private void DeleteItem()
+        /// <summary>
+        /// Dekete the selected media item.
+        /// </summary>
+        /// <returns>Nothing.</returns>
+        private async Task DeleteItemAsync()
         {
+            await dataService.DeleteItemAsync(SelectedMediaItem);
             _ = _allItems.Remove(SelectedMediaItem);
             _ = Items.Remove(SelectedMediaItem);
         }
@@ -101,18 +107,21 @@ namespace MyMediaCollection.ViewModels
         {
             this.navigationService = navigationService;
             this.dataService = dataService;
-            PopulateData();
-            DeleteCommand = new RelayCommand(DeleteItem, CanDeleteItem);
+            _ = PopulateDataAsync();
+            DeleteCommand = new RelayCommand(async()=>await DeleteItemAsync(), CanDeleteItem);
             AddEditCommand = new RelayCommand(AddOrEditItem);
         }
 
         /// <summary>
         /// Set up temporary data.
         /// </summary>
-        private void PopulateData()
+        private async Task PopulateDataAsync()
         {
             _items.Clear();
-            dataService.GetItems().ToList().ForEach(i => _items.Add(i));
+            foreach (MediaItem mediaItem in await dataService.GetItemsAsync())
+            {
+                _items.Add(mediaItem);
+            }
             _allItems = new ObservableCollection<MediaItem>(Items);
             _mediums = new ObservableCollection<string> { AllMediums };
             dataService.GetItemTypes().ToList().ForEach(it => _mediums.Add(it.ToString()));

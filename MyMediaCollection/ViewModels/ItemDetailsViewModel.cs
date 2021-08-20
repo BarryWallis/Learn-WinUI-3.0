@@ -1,5 +1,8 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 using AppUIBasics;
 
@@ -17,6 +20,8 @@ namespace MyMediaCollection.ViewModels
         private int _itemId;
 
         private string _itemName;
+        [MinLength(2, ErrorMessage = "Item name must be at least 2 characters.")]
+        [MaxLength(100, ErrorMessage = "Item name must be 100 characters or less.")]
         public string ItemName
         {
             get => _itemName;
@@ -93,6 +98,7 @@ namespace MyMediaCollection.ViewModels
                             .Select(m => m.Name)
                             .ToList()
                             .ForEach(n => Mediums.Add(n));
+                        Debug.Assert(Mediums.Count > 0);
                     }
 
                     //(SaveCommand as RelayCommand).RaiseCanExecuteChanged();
@@ -125,7 +131,6 @@ namespace MyMediaCollection.ViewModels
             //SaveCommand = new RelayCommand(SaveItem, CanSaveItem);
             CancelCommand = new RelayCommand(Cancel);
             PopulateLists();
-            PopulateExistingItem(dataService);
             IsDirty = false;
             IsPageValid = false;
 
@@ -135,11 +140,11 @@ namespace MyMediaCollection.ViewModels
         /// Populate the properties with the exising item data.
         /// </summary>
         /// <param name="dataService">The data service to recieve the data from.</param>
-        private void PopulateExistingItem(IDataService dataService)
+        private async Task PopulateExistingItemAsync(IDataService dataService)
         {
             if (_selectedItemId > 0)
             {
-                MediaItem item = dataService.GetItem(_selectedItemId);
+                MediaItem item = await dataService.GetItemAsync(_selectedItemId);
                 Mediums.Clear();
                 dataService.GetMediums(item.MediaType).Select(m => m.Name).ToList().ForEach(n => Mediums.Add(n));
                 _itemId = item.Id;
@@ -172,17 +177,17 @@ namespace MyMediaCollection.ViewModels
         /// <summary>
         /// Save a media item.
         /// </summary>
-        private void SaveItem()
+        private async Task SaveItemAsync()
         {
             MediaItem mediaItem;
             if (_itemId > 0)
             {
-                mediaItem = dataService.GetItem(_itemId);
+                mediaItem = await dataService.GetItemAsync(_itemId);
                 mediaItem.Name = ItemName;
                 mediaItem.Location = (LocationType)Enum.Parse(typeof(LocationType), SelectedLocation);
                 mediaItem.MediaType = (ItemType)Enum.Parse(typeof(ItemType), SelectedItemType);
                 mediaItem.MediumInfo = dataService.GetMedium(SelectedMedium);
-                dataService.UpdateItem(mediaItem);
+                await dataService.UpdateItemAsync(mediaItem);
             }
             else
             {
@@ -194,7 +199,7 @@ namespace MyMediaCollection.ViewModels
                     MediumInfo = dataService.GetMedium(SelectedMedium)
                 };
 
-                _ = dataService.AddItem(mediaItem);
+                _ = await dataService.AddItemAsync(mediaItem);
             }
         }
 
@@ -212,11 +217,11 @@ namespace MyMediaCollection.ViewModels
         /// Iniitialize the data for the item details page.
         /// </summary>
         /// <param name="selectItemId">The seleted item when the page is initialized.</param>
-        public void InitializeItemDetailData(int selectItemId)
+        public async Task InitializeItemDetailDataAsync(int selectItemId)
         {
             _selectedItemId = selectItemId;
             PopulateLists();
-            PopulateExistingItem(dataService);
+            await PopulateExistingItemAsync(dataService);
             IsDirty = false;
             IsPageValid = false;
         }
@@ -224,9 +229,9 @@ namespace MyMediaCollection.ViewModels
         /// <summary>
         /// Save the current item and initilize the page to add a new item.
         /// </summary>
-        public void SaveItemAndContinue()
+        public async Task SaveItemAndContinueAsync()
         {
-            SaveItem();
+            await SaveItemAsync();
             _itemId = 0;
             ItemName = string.Empty;
             SelectedMedium = null;
@@ -239,9 +244,9 @@ namespace MyMediaCollection.ViewModels
         /// <summary>
         /// Save the current item and return to the previous page.
         /// </summary>
-        public void SaveItemAndReturn()
+        public async Task SaveItemAndReturnAsync()
         {
-            SaveItem();
+            await SaveItemAsync();
             navigationService.GoBack();
         }
     }

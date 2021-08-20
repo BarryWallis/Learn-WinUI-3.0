@@ -1,4 +1,10 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 using Microsoft.UI.Xaml.Data;
 
@@ -7,12 +13,26 @@ using MyMediaCollection.Interfaces;
 #nullable enable
 namespace MyMediaCollection.ViewModels
 {
-    public class BindableBase : INotifyPropertyChanged
+    public class BindableBase : INotifyPropertyChanged, INotifyDataErrorInfo, IValidatable
     {
         public virtual event PropertyChangedEventHandler? PropertyChanged;
 
         protected INavigationService? navigationService;
         protected IDataService? dataService;
+        private readonly Dictionary<string, List<ValidationResult>> _errors = new();
+
+        public bool HasErrors => _errors.Any();
+
+        /// <summary>
+        /// Signal that the property has changed and validate the value against the property.
+        /// </summary>
+        /// <param name="propertyName">The property name.</param>
+        /// <param name="value">The value to validate.</param>
+        private void OnPropertyChanged(string? propertyName, object? value)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            Validate(propertyName, value);
+        }
 
         /// <summary>
         /// Signal that a property has changed.
@@ -35,11 +55,55 @@ namespace MyMediaCollection.ViewModels
             if (!Equals(originalValue, newValue))
             {
                 originalValue = newValue;
-                OnPropertyChanged(propertyName);
+                OnPropertyChanged(propertyName, newValue);
                 result = true;
             }
 
             return result;
         }
+
+        /// <inheritdoc/>
+        public void Validate(string? memberName, object? value)
+        {
+            ClearErrors(memberName);
+            List<ValidationResult> results = new();
+            bool result = Validator.TryValidateProperty(value, new ValidationContext(this, null, null) { MemberName = memberName }, results);
+            if (!result)
+            {
+                AddErrors(memberName, results);
+            }
+        }
+
+        private void AddErrors(string? propertyName, List<ValidationResult> results)
+        {
+            Debug.Assert(propertyName is not null);
+            if (!_errors.TryGetValue(propertyName!, out List<ValidationResult> errors))
+            {
+                errors = new List<ValidationResult>();
+                _errors.Add(propertyName!, errors);
+            }
+
+            errors.AddRange(results);
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+        }
+
+        private void ClearErrors(string? propertyName)
+        {
+            Debug.Assert(propertyName is not null);
+            if (_errors.TryGetValue(propertyName!, out List<ValidationResult> errors))
+            {
+                errors.Clear();
+                ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+            }
+        }
+
+        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+
+        /// <summary>
+        /// Get the errors associated with the property name.
+        /// </summary>
+        /// <param name="propertyName">The property name to get the errors for.</param>
+        /// <returns>The list of errors for the property name.</returns>
+        public IEnumerable<object> GetErrors(string propertyName) => _errors[propertyName];
     }
 }

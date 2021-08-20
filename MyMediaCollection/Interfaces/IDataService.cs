@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using MyMediaCollection.Enums;
 using MyMediaCollection.Models;
@@ -16,27 +17,27 @@ namespace MyMediaCollection.Interfaces
         /// Get all evailable media items.
         /// </summary>
         /// <returns>The list of items.</returns>
-        IList<MediaItem> GetItems();
+        Task<IList<MediaItem>> GetItemsAsync();
 
         /// <summary>
         /// Get the media item with the given Id.
         /// </summary>
         /// <param name="id">The Id to use.</param>
         /// <returns></returns>
-        MediaItem GetItem(int id);
+        Task<MediaItem> GetItemAsync(int id);
 
         /// <summary>
-        /// Add a new media item to the collection.
+        /// Add a new media item to the table.
         /// </summary>
-        /// <param name="mediaItem">The media item to ad to the collection.</param>
+        /// <param name="mediaItem">The media item to ad to the table.</param>
         /// <returns></returns>
-        int AddItem(MediaItem mediaItem);
+        Task<int> AddItemAsync(MediaItem mediaItem);
 
         /// <summary>
         /// Update the media item in the collection.
         /// </summary>
         /// <param name="mediaItem">The media item to updaate.</param>
-        void UpdateItem(MediaItem mediaItem);
+        Task UpdateItemAsync(MediaItem mediaItem);
 
         /// <summary>
         /// Get the list of item types.
@@ -69,5 +70,18 @@ namespace MyMediaCollection.Interfaces
         /// </summary>
         /// <returns></returns>
         IList<LocationType> GetLocationTypes();
+
+        /// <summary>
+        /// Initialize the database connection.
+        /// </summary>
+        /// <returns>Nothing.</returns>
+        Task InitializeDataAsync();
+
+        /// <summary>
+        /// Delete a Media Item from the table.
+        /// </summary>
+        /// <param name="mediaItem">The Media Item to delete.</param>
+        /// <returns>Nothing.</returns>
+        Task DeleteItemAsync(MediaItem mediaItem);
     }
 }

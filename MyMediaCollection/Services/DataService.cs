@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using MyMediaCollection.Enums;
 using MyMediaCollection.Interfaces;
@@ -203,5 +204,11 @@ namespace MyMediaCollection.Services
         /// </summary>
         private void PopulateLocationTypes()
             => _locationTypes = Enum.GetNames(typeof(LocationType)).Select(s => Enum.Parse<LocationType>(s, false)).ToList();
+        public Task<IList<MediaItem>> GetItemsAsync() => throw new NotImplementedException();
+        public Task<MediaItem> GetItemAsync(int id) => throw new NotImplementedException();
+        public Task<int> AddItemAsync(MediaItem mediaItem) => throw new NotImplementedException();
+        public Task UpdateItemAsync(MediaItem mediaItem) => throw new NotImplementedException();
+        public Task InitializeDataAsync() => throw new NotImplementedException();
+        public Task DeleteItemAsync(MediaItem mediaItem) => throw new NotImplementedException();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
@@ -43,7 +44,7 @@ namespace MyMediaCollection
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs e)
         {
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
@@ -51,6 +52,8 @@ namespace MyMediaCollection
             {
                 // Register our services.
                 Container = RegisterServices();
+                IDataService dataService = Container.GetService<IDataService>();
+                await dataService.InitializeDataAsync();
 
                 // Create a Frame to act as the navigation context and navigate to the first page
                 rootFrame = new Frame();
@@ -112,7 +115,7 @@ namespace MyMediaCollection
             navigationService.Configure(nameof(MainPage), typeof(MainPage));
             navigationService.Configure(nameof(ItemDetailsPage), typeof(ItemDetailsPage));
             _ = services.AddSingleton<INavigationService>(navigationService)
-                        .AddSingleton<IDataService, DataService>()
+                        .AddSingleton<IDataService, SqliteDataService>()
                         .AddTransient<MainViewModel>()
                         .AddTransient<ItemDetailsViewModel>();
             return services.BuildServiceProvider();
