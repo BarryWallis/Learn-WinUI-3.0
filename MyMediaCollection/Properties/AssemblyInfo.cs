@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("MyMediaCollection")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("My Media Collection")]
+[assembly: AssemblyDescription("Catalog and track your movies, music and books!")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MyMediaCollection")]
+[assembly: AssemblyProduct("My Media Collection")]
 [assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

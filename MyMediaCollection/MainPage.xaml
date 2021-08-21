@@ -5,36 +5,35 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:models="using:MyMediaCollection.Models"
       mc:Ignorable="d"
+      Loaded="MainPage_Loaded"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Media Collection"
-                       Grid.Column="0"
-                       Margin="4"
-                       FontWeight="Bold"
-                       VerticalAlignment="Center" />
-            <StackPanel Grid.Column="1"
-                        Orientation="Horizontal"
+        <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+                <SymbolIcon Symbol="Home"
+                            Margin="8" />
+                <TextBlock Text="Home"
+                           Margin="8"
+                           Style="{StaticResource SubheaderTextBlockStyle}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right">
                 <TextBlock Text="Media Type:"
                            Margin="4"
-                           FontWeight="Bold"
-                           VerticalAlignment="Center" />
+                           Style="{StaticResource SubheaderTextBlockStyle}"
+                           VerticalAlignment="Bottom" />
                 <ComboBox ItemsSource="{x:Bind ViewModel.Mediums}"
                           SelectedItem="{x:Bind ViewModel.SelectedMedium, Mode=TwoWay}"
                           MinWidth="120"
-                          Margin="0,2,6,4" />
+                          Margin="0,2,6,4"
+                          VerticalAlignment="Bottom" />
             </StackPanel>
-        </Grid>
+        </StackPanel>
         <ListView ItemsSource="{x:Bind ViewModel.Items}"
                   SelectedItem="{x:Bind ViewModel.SelectedMediaItem, Mode=TwoWay}"
                   DoubleTapped="{x:Bind ViewModel.ListViewDoubleTapped}"
@@ -47,24 +46,24 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0"
-                                BorderBrush="BlueViolet"
+                                BorderBrush="{ThemeResource SystemAccentColor}"
                                 BorderThickness="0,0,0,1">
                             <TextBlock Text="Medium"
-                                       Margin="5,0,0,0"
-                                       FontWeight="Bold" />
+                                       Margin="4,0,0,0"
+                                       Style="{StaticResource TitleTextBlockStyle}" />
                         </Border>
                         <Border Grid.Column="1"
-                                BorderBrush="BlueViolet"
+                                BorderBrush="{ThemeResource SystemAccentColor}"
                                 BorderThickness="0,0,0,1">
                             <TextBlock Text="Title"
                                        Margin="5,0,0,0"
-                                       FontWeight="Bold" />
+                                       Style="{StaticResource TitleTextBlockStyle}" />
                         </Border>
                     </Grid>
                 </DataTemplate>
             </ListView.HeaderTemplate>
             <ListView.ItemTemplate>
-                <DataTemplate x:DataType="models:MediaItem" >
+                <DataTemplate x:DataType="models:MediaItem">
                     <Grid IsHitTestVisible="False">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="100" />
@@ -78,15 +77,19 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <StackPanel Grid.Row="2"
-                    HorizontalAlignment="Right"
-                    Orientation="Horizontal">
+        <Border Grid.Row="2"
+                BorderBrush="{ThemeResource SystemAccentColor}"
+                BorderThickness="0,1,0,0"
+                Margin="4,0">
+            <StackPanel HorizontalAlignment="Right"
+                        Orientation="Horizontal">
             <Button Command="{x:Bind ViewModel.AddEditCommand}"
                     Content="Add / Edit Item"
                     Margin="8,8,0,8" />
             <Button Command="{x:Bind ViewModel.DeleteCommand}"
                     Content="Delete Item"
                     Margin="8" />
-        </StackPanel>
+            </StackPanel>
+        </Border>
     </Grid>
 </Page>

@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       mc:Ignorable="d"
+      Loaded="ItemDetailsPage_Loaded"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
@@ -36,12 +37,17 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Text="Item Details"
-                   Grid.Row="0"
-                   FontSize="18"
-                   Margin="8" />
-
-        <Grid Grid.Row="1">
+        <StackPanel Grid.Row="0"
+                    Orientation="Horizontal">
+            <SymbolIcon Symbol="Edit"
+                        Margin="8" />
+            <TextBlock Text="Item Details"
+                       Style="{StaticResource SubheaderTextBlockStyle}"
+                       Margin="8" />
+        </StackPanel>
+        <Grid Grid.Row="1" Margin="4,0,4,8"
+              BorderBrush="{ThemeResource SystemAccentColor}"
+              BorderThickness="0,1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -96,7 +102,7 @@
                     Orientation="Horizontal"
                     HorizontalAlignment="Right">
             <SplitButton x:Name="SaveButton"
-                         Content="Save"
+                         Content="Save and Return"
                          Margin="8,8,0,8"
                          Click="{x:Bind ViewModel.SaveItemAndReturnAsync}"
                          IsEnabled="{x:Bind ViewModel.CanBeSaved, Mode=OneWay}">

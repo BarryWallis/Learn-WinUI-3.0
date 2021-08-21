@@ -37,7 +37,9 @@ namespace AppUIBasics
         }
 
         public ObservableCollection() : base() { }
+
         public ObservableCollection(IList<T> list) : base(list.ToList()) { }
+
         public ObservableCollection(IEnumerable<T> collection) : base(collection.ToList()) { }
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;

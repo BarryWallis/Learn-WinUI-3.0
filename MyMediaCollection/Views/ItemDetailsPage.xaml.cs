@@ -1,7 +1,4 @@
 ﻿
-using System.Diagnostics;
-using System.Threading.Tasks;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -26,6 +23,7 @@ namespace MyMediaCollection.Views
         public ItemDetailsPage()
         {
             InitializeComponent();
+            Loaded += ItemDetailsPage_Loaded;
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
             string haveExplainedSaveSetting = localSettings.Values[nameof(SavingTip)] as string;
             if (!bool.TryParse(haveExplainedSaveSetting, out bool result) || !result)
@@ -45,5 +43,7 @@ namespace MyMediaCollection.Views
                 await ViewModel.InitializeItemDetailDataAsync(selectItemId);
             }
         }
+
+        private void ItemDetailsPage_Loaded(object sender, RoutedEventArgs e) => Window.Current.Title = "Item Details";
     }
 }

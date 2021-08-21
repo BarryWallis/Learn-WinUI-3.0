@@ -55,16 +55,14 @@ namespace MyMediaCollection.ViewModels
         public ObservableCollection<MediaItem> Items
         {
             get => _items;
-            set => SetProperty(ref _items, value);
-        }
+            set => SetProperty(ref _items, value); }
 
         private IList<string> _mediums;
 
         public IList<string> Mediums
         {
             get => _mediums;
-            set => SetProperty(ref _mediums, value);
-        }
+            set => SetProperty(ref _mediums, value); }
 
         #region Commands
         public ICommand AddEditCommand { get; set; }
@@ -108,7 +106,7 @@ namespace MyMediaCollection.ViewModels
             this.navigationService = navigationService;
             this.dataService = dataService;
             _ = PopulateDataAsync();
-            DeleteCommand = new RelayCommand(async()=>await DeleteItemAsync(), CanDeleteItem);
+            DeleteCommand = new RelayCommand(async () => await DeleteItemAsync(), CanDeleteItem);
             AddEditCommand = new RelayCommand(AddOrEditItem);
         }
 

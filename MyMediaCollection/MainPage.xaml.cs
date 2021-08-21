@@ -17,6 +17,12 @@ namespace MyMediaCollection
     {
         public MainViewModel ViewModel { get; } = (Application.Current as App).Container.GetService<MainViewModel>();
 
-        public MainPage() => InitializeComponent();
+        public MainPage()
+        {
+            InitializeComponent();
+            Loaded += MainPage_Loaded;
+        }
+
+        private void MainPage_Loaded(object sender, RoutedEventArgs e) => Window.Current.Title = "Home";
     }
 }
